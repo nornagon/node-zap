@@ -99,6 +99,7 @@ if (process.argv[2] === '--one') {
 	var tests = []
 	test_files.forEach(function (tf) {
 		Object.keys(require(tf)).forEach(function (test) {
+			if (['setup','teardown'].indexOf(test) >= 0) { return }
 			tests.push({ file: tf, test: test })
 		})
 	})
@@ -112,28 +113,67 @@ if (process.argv[2] === '--one') {
 			"\x1b[0m" + '/' + t.test
 	}
 
-	function run() {
-		if (tests.length <= 0) { return }
-		var t = tests.shift()
-		while (t && ['setup','teardown'].indexOf(t.test) >= 0) {
-			t = tests.shift()
-		}
-		if (!t) { return }
-		sys.print(name(t), '... ')
+	function runOne(t, cb) {
 		var output = ''
 		var runner = spawn(process.execPath, [__filename, '--one', t.file, t.test])
 		runner.on('exit', function (code) {
 			if (code == 0) {
-				sys.puts("passed")
+				cb()
 			} else {
-				sys.puts("\x1b[31;1mfailed\x1b[0m")
-				sys.puts(output)
+				cb(output)
 			}
-			run()
 		})
 		runner.stdout.on('data', function (data) { output += data })
 		runner.stderr.on('data', function (data) { output += data })
 	}
 
-	run()
+	function runPar() {
+		var ordered = { upTo: 0 }
+		function inOrder(n, cb) {
+			if (!ordered[n]) { ordered[n] = [] }
+			if (ordered.upTo == n) {
+				cb()
+			} else {
+				ordered[n].push(cb)
+			}
+		}
+		function doneOrder(n) {
+			ordered[n].done = true
+			while (ordered[ordered.upTo] && ordered[ordered.upTo].done) {
+				ordered[ordered.upTo].forEach(function (cb) { cb() })
+				ordered.upTo++
+			}
+			if (ordered[ordered.upTo]) {
+				ordered[ordered.upTo].forEach(function (cb) { cb() })
+			}
+			ordered[ordered.upTo] = []
+		}
+		var testOrder = 0
+		function runNext() {
+			if (tests.length <= 0) { return }
+			var t = tests.shift()
+			var o = testOrder++
+			inOrder(o, function () { sys.print(name(t), "... ") })
+			runOne(t, function (err) {
+				if (err) {
+					inOrder(o, function () {
+						sys.puts("failed")
+						sys.puts(err)
+					})
+				} else {
+					inOrder(o, function () {
+						sys.puts("passed")
+					})
+				}
+				doneOrder(o)
+				runNext()
+			})
+		}
+		var numCPUs = require('os').cpus().length
+		for (var i = 0; i < numCPUs + 1; i++) {
+			runNext()
+		}
+	}
+
+	runPar()
 }
