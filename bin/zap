@@ -1,0 +1,139 @@
+#!/usr/bin/env node
+// vim: set ft=javascript :
+
+var fs = require('fs')
+  , path = require('path')
+  , spawn = require('child_process').spawn
+  , sys = require('sys')
+
+if (process.argv[2] === '--one') {
+	// run a particular test
+	var test = {
+		finish: function () {
+			test._finished++
+		},
+		_finished: 0,
+		fail: function (message) {
+			return function () {
+				sys.puts("Test failed: ", message)
+				process.exit(1)
+			}
+		},
+	}
+	process.on('exit', function (code) {
+		if (suite && suite.teardown) {
+			suite.teardown.call(context, test)
+		}
+		if (code > 0) { return }
+		if (test._finished == 1) {
+			process.reallyExit(0)
+		} else {
+			if (test._finished == 0) {
+				sys.puts("Test didn't call finish().")
+			} else {
+				sys.puts("Test called finish()", test._finished, "times.")
+			}
+			process.reallyExit(1)
+		}
+	})
+	var suite = require(process.argv[3])
+	var context = {}
+	if (suite.setup) {
+		suite.setup.call(context, test)
+	}
+	suite[process.argv[4]].call(context, test)
+} else {
+	// run a suite
+	var test_targets = []
+	if (process.argv.length <= 2) {
+		if (!path.existsSync('./test')) {
+			console.error(
+				"Test directory (./test) not found. zap suggests:\n\n" +
+				"\x1b[36m$\x1b[0m mkdir ./test\n" +
+				"\x1b[36m$\x1b[0m cat > ./test/example.test.js\n" +
+				"var assert = require('assert')\n" +
+				"module.exports = {\n" +
+				"  'example test': function (test) {\n" +
+				"     assert.ok(true, 'test passed!');\n" +
+				"     test.finish()\n" +
+				"  },\n" +
+				"}\n" +
+				"\x1b[36m$\x1b[0m zap\n" +
+				"\x1b[33;1m\u26a1 \u26a1 \u26a1\x1b[0m")
+			process.exit(1)
+		}
+		if (!fs.statSync('./test').isDirectory()) {
+			console.error("zap: ./test is not a directory")
+			process.exit(1)
+		}
+		test_targets.push('./test')
+	} else {
+		for (var i = 2; i < process.argv.length; i++) {
+			test_targets.push(process.argv[i])
+		}
+	}
+	var test_files = []
+	test_targets.forEach(function (target) {
+		test_files = test_files.concat(allTestFiles(target))
+	})
+
+	function allTestFiles(pth) {
+		var stats = fs.statSync(pth)
+		if (stats.isFile()) {
+			if (pth.match(/\.test\.js$/)) {
+				return [path.resolve(pth)]
+			} else {
+				return []
+			}
+		} else if (stats.isDirectory()) {
+			var paths = []
+			fs.readdirSync(pth).forEach(function (file) {
+				paths = paths.concat(allTestFiles(path.join(pth, file)))
+			})
+			return paths
+		} else {
+			return []
+		}
+	}
+
+	var tests = []
+	test_files.forEach(function (tf) {
+		Object.keys(require(tf)).forEach(function (test) {
+			tests.push({ file: tf, test: test })
+		})
+	})
+	if (tests.length === 0) {
+		console.info("All of 0 tests passed. Yeah!")
+		process.exit(0)
+	}
+
+	function name(t) {
+		return "\x1b[35m" + path.basename(t.file).match(/^(.+?)(\.test)?\.js$/)[1] + 
+			"\x1b[0m" + '/' + t.test
+	}
+
+	function run() {
+		if (tests.length <= 0) { return }
+		var t = tests.shift()
+		while (t && ['setup','teardown'].indexOf(t.test) >= 0) {
+			t = tests.shift()
+		}
+		if (!t) { return }
+		sys.print(name(t), '... ')
+		var output = ''
+		var runner = spawn(process.execPath, [__filename, '--one', t.file, t.test])
+		runner.on('exit', function (code) {
+			if (code == 0) {
+				sys.puts("passed")
+			} else {
+				sys.puts("\x1b[31;1mfailed\x1b[0m")
+				sys.puts(output)
+			}
+			run()
+		})
+		runner.stdout.on('data', function (data) { output += data })
+		runner.stderr.on('data', function (data) { output += data })
+	}
+
+	run()
+}
