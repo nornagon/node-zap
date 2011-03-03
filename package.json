@@ -5,5 +5,5 @@
 	"author"      : "Jeremy Apthorp <nornagon@nornagon.net>",
 	"bin"         : { "zap": "./bin/zap" },
 	"main"        : "./lib/zap",
-	"version"     : "0.1.0"
+	"version"     : "0.2.0"
 }
