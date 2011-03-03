@@ -77,10 +77,10 @@ if (process.argv[2] === '--one') {
 		test_files = test_files.concat(allTestFiles(target))
 	})
 
-	function allTestFiles(pth) {
+	function allTestFiles(pth, match) {
 		var stats = fs.statSync(pth)
 		if (stats.isFile()) {
-			if (pth.match(/\.test\.js$/)) {
+			if (!match || pth.match(match)) {
 				return [path.resolve(pth)]
 			} else {
 				return []
@@ -88,7 +88,7 @@ if (process.argv[2] === '--one') {
 		} else if (stats.isDirectory()) {
 			var paths = []
 			fs.readdirSync(pth).forEach(function (file) {
-				paths = paths.concat(allTestFiles(path.join(pth, file)))
+				paths = paths.concat(allTestFiles(path.join(pth, file), /\.test\.js$/))
 			})
 			return paths
 		} else {
