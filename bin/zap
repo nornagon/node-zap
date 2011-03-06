@@ -157,7 +157,7 @@ if (process.argv[2] === '--one') {
 			runOne(t, function (err) {
 				if (err) {
 					inOrder(o, function () {
-						sys.puts("failed")
+						sys.puts("\x1b[1;31mfailed\x1b[0m")
 						sys.puts(err)
 					})
 				} else {
