@@ -36,7 +36,7 @@ if (process.argv[2] === '--one') {
 			process.reallyExit(1)
 		}
 	})
-	var suite = require(process.argv[3])
+	var suite = require(path.resolve(process.argv[3]))
 	var context = {}
 	if (suite.setup) {
 		suite.setup.call(context, test)
