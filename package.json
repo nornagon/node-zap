@@ -2,7 +2,7 @@
   "name"        : "zap",
   "description" : "A tiny test runner",
   "keywords"    : ["test", "testing"],
-  "url"         : "https://github.com/nornagon/node-zap",
+  "homepage"    : "https://github.com/nornagon/node-zap",
   "repository"  : { "type" : "git"
                   , "url"  : "https://github.com/nornagon/node-zap.git" }
   "author"      : "Jeremy Apthorp <nornagon@nornagon.net>",
