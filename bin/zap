@@ -14,10 +14,8 @@ if (process.argv[2] === '--one') {
 		},
 		_finished: 0,
 		fail: function (message) {
-			return function () {
-				sys.puts("Test failed: ", message)
-				process.exit(1)
-			}
+			sys.print("Test failed: ", message, "\n")
+			process.exit(1)
 		},
 	}
 	process.on('exit', function (code) {
