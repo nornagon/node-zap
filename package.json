@@ -7,5 +7,5 @@
                   , "url"  : "https://github.com/nornagon/node-zap.git" },
   "author"      : "Jeremy Apthorp <nornagon@nornagon.net>",
   "bin"         : { "zap": "./bin/zap" },
-  "version"     : "0.2.2"
+  "version"     : "0.2.3"
 }

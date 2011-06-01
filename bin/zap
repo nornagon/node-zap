@@ -6,6 +6,12 @@ var fs = require('fs')
   , spawn = require('child_process').spawn
   , sys = require('sys')
 
+var coffee
+try {
+	coffee = require('coffee-script')
+} catch (e) {
+}
+
 if (process.argv[2] === '--one') {
 	// run a particular test
 	var test = {
@@ -86,7 +92,12 @@ if (process.argv[2] === '--one') {
 		} else if (stats.isDirectory()) {
 			var paths = []
 			fs.readdirSync(pth).forEach(function (file) {
-				paths = paths.concat(allTestFiles(path.join(pth, file), /\.test\.js$/))
+				var rfile
+				if (coffee)
+					rfile = /\.test\.(js|coffee)$/
+				else
+					rfile = /\.test\.js$/
+				paths = paths.concat(allTestFiles(path.join(pth, file), rfile))
 			})
 			return paths
 		} else {
@@ -107,8 +118,7 @@ if (process.argv[2] === '--one') {
 	}
 
 	function name(t) {
-		return "\x1b[35m" + path.basename(t.file).match(/^(.+?)(\.test)?\.js$/)[1] + 
-			"\x1b[0m" + '/' + t.test
+		return "\x1b[35m" + path.basename(t.file).match(/^(.+?)(\.test)?\.(js|coffee)$/)[1] + "\x1b[0m" + '/' + t.test
 	}
 
 	function runOne(t, cb) {
