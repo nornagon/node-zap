@@ -6,7 +6,7 @@ zap was inspired by a conversation on the freenode #nodejs channel, in which ry 
 zap does a little more than that makefile. I wanted:
 
  - multiple tests per file, in the style of [expresso](http://github.com/visionmedia/expresso),
- - assurance that the tests actually finished (via `test.finish()`),
+ - assurance that the tests actually finished (via `test.done()`),
  - pretty output.
 
 ## Example
@@ -20,12 +20,12 @@ zap does a little more than that makefile. I wanted:
       },
       'test that thingy': function (test) {
         assert.ok(test.is_awesome, 'test passed!')
-        test.finish()
+        test.done()
       }
       'test asynchronous things': function (test) {
         process.nextTick(function () {
         	assert.ok(test.is_awesome)
-        	test.finish()
+        	test.done()
         })
       }
     }
@@ -40,7 +40,7 @@ zap does a little more than that makefile. I wanted:
 
 ## Installing
 
-Just `npm install zap`.
+Just `npm install -g zap`.
 
 ## Details
 
