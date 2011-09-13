@@ -18,7 +18,7 @@ if (process.argv[2] === '--one') {
 		done: function () {
 			test._finished++
 		},
-		finish: function () { this.finish() },
+		finish: function () { this.done() },
 		_finished: 0,
 		fail: function (message) {
 			sys.print("Test failed: ", message, "\n")
