@@ -4,7 +4,7 @@
 var fs = require('fs')
   , path = require('path')
   , spawn = require('child_process').spawn
-  , sys = require('sys')
+  , util = require('util')
 
 var coffee
 try {
@@ -21,7 +21,7 @@ if (process.argv[2] === '--one') {
 		finish: function () { this.done() },
 		_finished: 0,
 		fail: function (message) {
-			sys.print("Test failed: ", message, "\n")
+			util.print("Test failed: ", message, "\n")
 			process.exit(1)
 		},
 	}
@@ -34,9 +34,9 @@ if (process.argv[2] === '--one') {
 			process.reallyExit(0)
 		} else {
 			if (test._finished == 0) {
-				sys.puts("Test didn't call done().")
+				util.puts("Test didn't call done().")
 			} else {
-				sys.puts("Test called done()", test._finished, "times.")
+				util.puts("Test called done()", test._finished, "times.")
 			}
 			process.reallyExit(1)
 		}
@@ -162,16 +162,16 @@ if (process.argv[2] === '--one') {
 			if (tests.length <= 0) { return }
 			var t = tests.shift()
 			var o = testOrder++
-			inOrder(o, function () { sys.print(name(t), "... ") })
+			inOrder(o, function () { util.print(name(t), "... ") })
 			runOne(t, function (err) {
 				if (err) {
 					inOrder(o, function () {
-						sys.puts("\x1b[1;31mfailed\x1b[0m")
-						sys.puts(err)
+						util.puts("\x1b[1;31mfailed\x1b[0m")
+						util.puts(err)
 					})
 				} else {
 					inOrder(o, function () {
-						sys.puts("passed")
+						util.puts("passed")
 					})
 				}
 				doneOrder(o)
