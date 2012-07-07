@@ -51,7 +51,7 @@ if (process.argv[2] === '--one') {
 	// run a suite
 	var test_targets = []
 	if (process.argv.length <= 2) {
-		if (!path.existsSync('./test')) {
+		if (!fs.existsSync('./test')) {
 			console.error(
 				"Test directory (./test) not found. zap suggests:\n\n" +
 				"\x1b[36m$\x1b[0m mkdir ./test\n" +
