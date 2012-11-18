@@ -136,6 +136,7 @@ if (process.argv[2] === '--one') {
 		runner.stderr.on('data', function (data) { output += data })
 	}
 
+	var numFailures = 0
 	function runPar() {
 		var ordered = { upTo: 0 }
 		function inOrder(n, cb) {
@@ -165,6 +166,7 @@ if (process.argv[2] === '--one') {
 			inOrder(o, function () { util.print(name(t), "... ") })
 			runOne(t, function (err) {
 				if (err) {
+					numFailures++
 					inOrder(o, function () {
 						util.puts("\x1b[1;31mfailed\x1b[0m")
 						util.puts(err)
@@ -184,5 +186,8 @@ if (process.argv[2] === '--one') {
 		}
 	}
 
+	process.on('exit', function() {
+		process.reallyExit(numFailures ? 1 : 0)
+	})
 	runPar()
 }
