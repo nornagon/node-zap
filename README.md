@@ -38,6 +38,13 @@ zap does a little more than that makefile. I wanted:
 <span style='color: #d338d3'>winner</span>/test asynchronous things... passed
 </pre>
 
+#### running just one test
+
+<pre style='background-color: black; color: white; border-color: black'>
+<b>$</b> zap --one test/winner.test.js "test that thingy"
+<span style='color: #d338d3'>winner</span>/test that thingy... passed
+</pre>
+
 ## Installing
 
 Just `npm install -g zap`.
