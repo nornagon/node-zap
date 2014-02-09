@@ -8,8 +8,11 @@ var fs = require('fs')
 
 var coffee
 try {
-	coffee = require('coffee-script')
-} catch (e) {
+	coffee = require('coffee-script/register')
+} catch (e0) {
+ 	try {
+		coffee = require('coffee-script')
+	} catch (e1) {}
 }
 
 if (process.argv[2] === '--one') {
