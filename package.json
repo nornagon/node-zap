@@ -8,5 +8,5 @@
   "author"      : "Jeremy Apthorp <nornagon@nornagon.net>",
   "bin"         : { "zap": "./bin/zap" },
   "preferGlobal": true,
-  "version"     : "0.2.5"
+  "version"     : "0.2.6"
 }
