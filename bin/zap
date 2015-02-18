@@ -37,9 +37,9 @@ if (process.argv[2] === '--one') {
 			process.reallyExit(0)
 		} else {
 			if (test._finished == 0) {
-				util.puts("Test didn't call done().")
+				console.log("Test didn't call done().")
 			} else {
-				util.puts("Test called done()", test._finished, "times.")
+				console.log("Test called done()", test._finished, "times.")
 			}
 			process.reallyExit(1)
 		}
@@ -171,12 +171,12 @@ if (process.argv[2] === '--one') {
 				if (err) {
 					numFailures++
 					inOrder(o, function () {
-						util.puts("\x1b[1;31mfailed\x1b[0m")
-						util.puts(err)
+						console.log("\x1b[1;31mfailed\x1b[0m")
+						console.log(err)
 					})
 				} else {
 					inOrder(o, function () {
-						util.puts("passed")
+						console.log("passed")
 					})
 				}
 				doneOrder(o)
