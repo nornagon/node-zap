@@ -24,7 +24,7 @@ if (process.argv[2] === '--one') {
 		finish: function () { this.done() },
 		_finished: 0,
 		fail: function (message) {
-			util.print("Test failed: ", message, "\n")
+			console.log("Test failed: ", message, "\n")
 			process.exit(1)
 		},
 	}
@@ -166,7 +166,7 @@ if (process.argv[2] === '--one') {
 			if (tests.length <= 0) { return }
 			var t = tests.shift()
 			var o = testOrder++
-			inOrder(o, function () { util.print(name(t), "... ") })
+			inOrder(o, function () { console.log(name(t), "... ") })
 			runOne(t, function (err) {
 				if (err) {
 					numFailures++
