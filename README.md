@@ -16,7 +16,7 @@ zap does a little more than that makefile. I wanted:
     var assert = require('assert')
     module.exports = {
       setup: function (test) {
-      	test.is_awesome = true
+        test.is_awesome = true
       },
       'test that thingy': function (test) {
         assert.ok(test.is_awesome, 'test passed!')
@@ -24,8 +24,8 @@ zap does a little more than that makefile. I wanted:
       }
       'test asynchronous things': function (test) {
         process.nextTick(function () {
-        	assert.ok(test.is_awesome)
-        	test.done()
+          assert.ok(test.is_awesome)
+          test.done()
         })
       }
     }
