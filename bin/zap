@@ -166,7 +166,10 @@ if (process.argv[2] === '--one') {
 			if (tests.length <= 0) { return }
 			var t = tests.shift()
 			var o = testOrder++
-			inOrder(o, function () { console.log(name(t), "... ") })
+			inOrder(o, function () {
+				process.stdout.write(
+					util.format("%s... ", name(t)))
+				})
 			runOne(t, function (err) {
 				if (err) {
 					numFailures++
